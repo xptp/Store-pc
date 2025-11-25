@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      # Название базы данных
+      POSTGRES_DB: my_store
+      # Пользователь PostgreSQL
+      POSTGRES_USER: postgres
+      # Пароль (для разработки)
+      POSTGRES_PASSWORD: password
+      # Разрешить подключения без пароля (только для разработки!)
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      # Порт 5433 на localhost -> порт 5432 в контейнере
+      # (5433 чтобы не конфликтовать с локальным PostgreSQL)
+      - "5433:5432"
+    volumes:
+      # Сохранение данных между перезапусками контейнера
+      - postgres_data:/var/lib/postgresql/data
+    # Проверка здоровья контейнера
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d my_store"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
